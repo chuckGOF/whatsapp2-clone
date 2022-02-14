@@ -20,20 +20,20 @@ function MyApp({ Component, pageProps }) {
   //   })
   // }, [])
 
-  useEffect(() => {
-    if (user) {
-      const docRef = doc(db, 'users', user.uid)
-      setDoc(docRef, {
-        email: user.email,
-        lastSeen: serverTimestamp(),
-        photoUrl: user.photoURL
-      }, {merge: true})
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user) {
+  //     const docRef = doc(db, 'users', user.uid)
+  //     setDoc(docRef, {
+  //       email: user.email,
+  //       lastSeen: serverTimestamp(),
+  //       photoUrl: user.photoURL
+  //     }, {merge: true})
+  //   }
+  // }, [user])
 
   // if (!myUser) return <Login />
   if (loading) return <Loading />
-  if (!user) return <Login />
+  // if (!user) return <Login />
   return <Component {...pageProps} />
 }
 

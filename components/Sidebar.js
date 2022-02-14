@@ -7,9 +7,19 @@ import {
 } from "@heroicons/react/outline";
 import * as EmailValidator from "email-validator";
 import {signOut} from 'firebase/auth'
-import {auth} from '../firebase'
-
+import { auth, db } from "../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { user } from "../constants";
+import { collection, addDoc, query, where } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
+import Chat from "./Chat";
 function Sidebar() {
+	// const [user] = useAuthState(auth)
+	const userChatRef = query(
+		collection(db, "chats"),
+		where("users", "array-contains", user.email)
+	);
+	const [chatsSnapshot] = useCollection(userChatRef);
 	const createChat = () => {
 		// console.log('create chat')
 		const input = prompt(
@@ -19,18 +29,40 @@ function Sidebar() {
 		if (!input) return null;
 
 		// check if valid email address
-		if (EmailValidator.validate(input)) {
-			// this is where we need to add the chat into the DB 'chats' collection
+		if (
+			EmailValidator.validate(input) &&
+			!chatExists(input) &&
+			input !== user.email
+		) {
+			// add chat into DB 'chats' collection if it doesnt already exitst and is valid
+			const addChat = async () => {
+				const docRef = await addDoc(
+					collection(db, "chats", {
+						users: [user.email, input],
+					})
+				);
+			};
+			addChat();
 		}
+
+		const chatExists = (recipientEmail) => {
+			return !!chatsSnapshot?.docs.find(
+				(chat) =>
+					chat.data().users.find((user) => user === recipientEmail)
+						?.length > 0
+			);
+		};
 	};
 
 	const handleAuthentication = () => {
-		signOut(auth).then(() => {
-			console.log('succefully signed out')
-		}).catch(err => {
-			alert(err.message);
-		})
-	}
+		signOut(auth)
+			.then(() => {
+				console.log("succefully signed out");
+			})
+			.catch((err) => {
+				alert(err.message);
+			});
+	};
 
 	return (
 		// container
@@ -68,6 +100,10 @@ function Sidebar() {
 			>
 				START A NEW CHAT
 			</button>
+
+			{chatsSnapshot?.doc.map((chat) => (
+				<Chat key={chat.id} id={chat.id} user={chat.data().users} />
+			))}
 		</div>
 	);
 }
