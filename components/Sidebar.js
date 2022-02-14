@@ -6,6 +6,8 @@ import {
 	SearchIcon,
 } from "@heroicons/react/outline";
 import * as EmailValidator from "email-validator";
+import {signOut} from 'firebase/auth'
+import {auth} from '../firebase'
 
 function Sidebar() {
 	const createChat = () => {
@@ -22,12 +24,22 @@ function Sidebar() {
 		}
 	};
 
+	const handleAuthentication = () => {
+		signOut(auth).then(() => {
+			console.log('succefully signed out')
+		}).catch(err => {
+			alert(err.message);
+		})
+	}
+
 	return (
 		// container
 		<div>
 			{/* header  */}
 			<div className="flex sticky top-0 bg-white z-[1] justify-between items-center p-4 h-20 border-b-gray border-b-2">
 				<img
+					// onClick={() => signOut(auth)}
+					onClick={handleAuthentication}
 					className="rounded-full h-14 w-14 cursor-pointer hover:opacity-80"
 					src="https://media-exp1.licdn.com/dms/image/C4E03AQFEBdlH7oLaVA/profile-displayphoto-shrink_400_400/0/1626149579570?e=1649894400&v=beta&t=FCwRF7mI3DbyRikhnhA49-20pkIPn7fiWpfoC8oktDc"
 					alt=""
