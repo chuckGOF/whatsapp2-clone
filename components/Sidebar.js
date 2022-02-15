@@ -14,7 +14,7 @@ import { collection, addDoc, query, where } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "./Chat";
 function Sidebar() {
-	// const [user] = useAuthState(auth)
+	const [user] = useAuthState(auth)
 	const userChatRef = query(
 		collection(db, "chats"),
 		where("users", "array-contains", user.email)
