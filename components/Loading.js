@@ -12,7 +12,7 @@ function Loading() {
 					src="http://assets.stickpng.com/images/580b57fcd9996e24bc43c543.png"
 					alt=""
 				/>
-				<Circle size={60} color="#3cbc28" />
+				<Circle size={60} color="#3cbc28" />	
 			</div>
 		</div>
 	);

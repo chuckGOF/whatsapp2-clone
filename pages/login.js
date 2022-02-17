@@ -1,16 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import React from "react";
-import {signInWithPopup} from 'firebase/auth'
-import {auth, provider} from '../firebase'
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../firebase";
 
 function Login() {
-
-  const signIn = () => {
-    signInWithPopup(auth, provider).then((result) => {
-      console.log(result)
-    }).catch((error) => alert(error.message))
-  }
+	const signIn = () => {
+		signInWithPopup(auth, provider)
+			.then((result) => {
+				console.log(result);
+			})
+			.catch((error) => alert(error.message));
+	};
 
 	return (
 		<div className="grid place-items-center h-screen bg-gray-200">
@@ -24,7 +25,12 @@ function Login() {
 					src="http://assets.stickpng.com/images/580b57fcd9996e24bc43c543.png"
 					alt=""
 				/>
-				<button onClick={signIn} className="border bg-green-500 p-2 rounded-md text-white ">Sign in with Google</button>
+				<button
+					onClick={signIn}
+					className="border bg-green-500 p-2 rounded-md text-white "
+				>
+					Sign in with Google
+				</button>
 			</div>
 		</div>
 	);

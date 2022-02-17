@@ -6,22 +6,31 @@ import {
 	SearchIcon,
 } from "@heroicons/react/outline";
 import * as EmailValidator from "email-validator";
-import {signOut} from 'firebase/auth'
+import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { user } from "../constants";
-import { collection, addDoc, query, where } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, connectFirestoreEmulator } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "./Chat";
+
 function Sidebar() {
-	const [user] = useAuthState(auth)
+	const [user] = useAuthState(auth);
 	const userChatRef = query(
 		collection(db, "chats"),
 		where("users", "array-contains", user.email)
 	);
 	const [chatsSnapshot] = useCollection(userChatRef);
+
+	const chatExists = (recipientEmail) => {
+		return !!chatsSnapshot?.docs.find(
+			(chat) =>
+				chat.data().users.find((user) => user === recipientEmail)
+					?.length > 0
+		);
+	};
+
 	const createChat = () => {
-		// console.log('create chat')
 		const input = prompt(
 			"Please enter an email address for the user you wish to chat with"
 		);
@@ -36,22 +45,12 @@ function Sidebar() {
 		) {
 			// add chat into DB 'chats' collection if it doesnt already exitst and is valid
 			const addChat = async () => {
-				const docRef = await addDoc(
-					collection(db, "chats", {
-						users: [user.email, input],
-					})
-				);
+				const docRef = await addDoc(collection(db, "chats"), {
+					users: [user.email, input],
+				});
 			};
 			addChat();
 		}
-
-		const chatExists = (recipientEmail) => {
-			return !!chatsSnapshot?.docs.find(
-				(chat) =>
-					chat.data().users.find((user) => user === recipientEmail)
-						?.length > 0
-			);
-		};
 	};
 
 	const handleAuthentication = () => {
@@ -101,9 +100,14 @@ function Sidebar() {
 				START A NEW CHAT
 			</button>
 
-			{chatsSnapshot?.doc.map((chat) => (
-				<Chat key={chat.id} id={chat.id} user={chat.data().users} />
-			))}
+			{chatsSnapshot &&
+				chatsSnapshot?.docs.map((chat) => (
+					<Chat
+						key={chat.id}
+						id={chat.id}
+						users={chat.data().users}
+					/>
+				))}
 		</div>
 	);
 }
