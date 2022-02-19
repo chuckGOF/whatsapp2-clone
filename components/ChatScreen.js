@@ -1,9 +1,10 @@
 import React from "react";
 
-function ChatScreen() {
+function ChatScreen({x}) {
 	return (
 		<div>
-			<h1>this is the ChatScreen</h1>
+            <h1>this is the ChatScreen</h1>
+            <p>{x}</p>
 		</div>
 	);
 }
