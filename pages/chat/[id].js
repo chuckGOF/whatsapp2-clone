@@ -24,7 +24,7 @@ export default Chat;
 
 // server side
 export async function getServerSideProps(context) {
-    const ref = doc(db, 'chats', context.query.id)//doc(db, 'chats', context.query.id)
+    const ref = doc(collection(db, 'chats'), context.query.id) //doc(db, 'chats', context.query.id)//
     const docSnap = await getDoc(ref)
     // console.log(docSnap.data())
 
