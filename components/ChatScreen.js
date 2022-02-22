@@ -7,7 +7,6 @@ function ChatScreen({ x }) {
 	return (
         <div className="mt-8 p-5">
             <div className="p-3 bg-green-300 border-2">{user.displayName}</div>
-            <h1>this is the ChatScreen</h1>
             <p>{x}</p>
 		</div>
 	);
