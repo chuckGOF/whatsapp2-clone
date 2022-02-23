@@ -26,7 +26,7 @@ export default Chat;
 export async function getServerSideProps(context) {
     const ref = doc(collection(db, 'chats'), context.query.id) //doc(db, 'chats', context.query.id)//
     const docSnap = await getDoc(ref)
-    // console.log(docSnap.data())
+    console.log(docSnap.data())
 
     if (docSnap.exists()) {
         console.log('Document data: ', docSnap.data())
