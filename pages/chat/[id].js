@@ -4,12 +4,14 @@ import React from "react";
 import ChatScreen from "../../components/ChatScreen";
 import Sidebar from "../../components/Sidebar";
 import { db } from "../../firebase";
+import {getRecipientEmail} from  '../../utils/utitilites'
 
 function Chat({data}) {
+    const [user] = useAuthState(auth)
 	return (
 		<div className="flex">
 			<Head>
-				<title></title>
+				<title>Chat with {getRecipientEmail(chat.users, user)}</title>
 			</Head>
 			<Sidebar />
 			<div className="flex-1 overflow-scroll h-screen">
