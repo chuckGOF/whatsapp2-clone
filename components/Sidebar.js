@@ -65,9 +65,9 @@ function Sidebar() {
 
 	return (
 		// container
-		<div>
+		<div className="flex-[0.45] border-r border-r-gray-100 h-screen min-w-[300px] max-w-[350] overflow-y-scroll scrollbar-none">
 			{/* header  */}
-			<div className="flex sticky top-0 bg-white z-[1] justify-between items-center p-4 h-20 border-b-gray border-b-2">
+			<div className="flex sticky top-0 bg-white z-[1] justify-between items-center p-4 h-20 border-b-gray border-b">
 				<img
 					// onClick={() => signOut(auth)}
 					onClick={handleAuthentication}

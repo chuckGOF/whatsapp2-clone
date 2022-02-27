@@ -1,13 +1,14 @@
-import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDoc, orderBy, getDocs, query } from "firebase/firestore";
 import Head from "next/head";
 import React from "react";
 import ChatScreen from "../../components/ChatScreen";
 import Sidebar from "../../components/Sidebar";
-import { db } from "../../firebase";
-import {getRecipientEmail} from  '../../utils/utitilites'
+import { db, auth } from "../../firebase";
+import { getRecipientEmail } from "../../utils/utitilites";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-function Chat({chat, messages}) {
-    const [user] = useAuthState(auth)
+function Chat({ chat, messages }) {
+	const [user] = useAuthState(auth);
 	return (
 		<div className="flex">
 			<Head>
@@ -15,7 +16,7 @@ function Chat({chat, messages}) {
 			</Head>
 			<Sidebar />
 			<div className="flex-1 overflow-scroll h-screen">
-				<ChatScreen chat={chat} message={messages}/>
+				<ChatScreen chat={chat} message={messages} />
 			</div>
 		</div>
 	);
@@ -23,51 +24,39 @@ function Chat({chat, messages}) {
 
 export default Chat;
 
-
 // server side
 export async function getServerSideProps(context) {
-    // const ref = doc(collection(db, 'chats'), context.query.id) //doc(db, 'chats', context.query.id)//
-    // const docSnap = await getDoc(ref)
-    // console.log(docSnap.data())
+	const ref = doc(collection(db, "chats"), context.query.id); //doc(db, 'chats', context.query.id)
 
-    // if (docSnap.exists()) {
-    //     console.log('Document data: ', docSnap.data())
-    // } else {
-    //     console.log('no such document')
-    // }
+	// Prep the messages on the server
+	const messageSnap = await getDocs(
+		query(collection(ref, "message")),
+		orderBy("timestamp", "asc")
+    );
+    
+	const messages = messageSnap.docs
+		.map((doc) => ({
+			id: doc.id,
+			...doc.data(),
+        }))
+		.map((messages) => ({
+			...messages,
+			timestamp: messages.timestamp.toDate().getTime(),
+        }));
 
-    // return {
-    //     props: {
-    //         data: JSON.stringify(docSnap.data())
-    //     }
-    // }
+	// Prep the chats
+	const chatSnap = await getDoc(ref);
+	const chat = {
+		id: chatSnap.id,
+		...chatSnap.data(),
+	};
 
-    const q = query(ref, orderBy('timestamp', 'asc'))
+	console.log(chat, messages);
 
-    //Prep the messages on the server
-    const messageSnap = await getDoc(q, 'messages')
-    const messages = messageSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-    })).map(messages => ({
-        ...messages,
-        timestamp: messages.timestamp.toDate().getTime()
-    }))
-
-    // Prep the chats
-    const chatSnap = await getDoc(q)
-    const chat = {
-        id: chatSnap.id,
-        ...chatSnap.data()
-    }
-
-    console.log(chat, messages)
-
-    return {
-        props: {
-            messages: JSON.stringify(messages),
-            chat: chat
-        }
-    }
-
+	return {
+		props: {
+			messages: JSON.stringify(messages),
+			chat: chat,
+		},
+	};
 }
