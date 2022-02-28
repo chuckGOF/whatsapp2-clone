@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
-import { collection, doc, orderBy, query } from "firebase/firestore";
+import {
+	collection,
+	doc,
+	orderBy,
+	query,
+	setDoc,
+	serverTimestamp,
+	addDoc,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import { Avatar } from "@mui/material";
 import {
@@ -17,21 +25,15 @@ function ChatScreen({ chat, messages }) {
 	const [user] = useAuthState(auth);
 	const router = useRouter();
 	const [input, setInput] = useState("");
-	// const [messagesSnapshot] = useCollection(
-	// 	query(
-	// 		// collection(db, 'chats', router.query.id, 'messages')
-	// 		collection(
-	// 			doc(collection(db, "chats"), router.query.id),
-	// 			"messages"
-	// 		),
-	// 		orderBy("timestamp", "asc")
-	// 	)
-	// );
+	const messagesRef = query(
+		collection(doc(db, "chats", router.query.id), "messages"),
+		orderBy("timestamp", "asc")
+	);
+	const [messagesSnapshot] = useCollection(messagesRef);
 
 	const showMessages = () => {
-		if (true) return "";
 		if (messagesSnapshot) {
-			return messagesSnapshot.docs.map((message) => {
+			return messagesSnapshot.docs.map((message) => (
 				<Message
 					key={message.id}
 					user={message.data().user}
@@ -39,13 +41,36 @@ function ChatScreen({ chat, messages }) {
 						...message.data(),
 						timestamp: message.data().timestamp?.toDate().getTime(),
 					}}
-				/>;
-			});
+				/>
+			));
 		}
 	};
 
-	const sendMessage = (e) => {
+	const sendMessage = async (e) => {
 		e.preventDefault();
+
+		// update lastseen
+		const userRef = doc(db, "users", user.uid);
+		setDoc(
+			userRef,
+			{
+				lastSeen: serverTimestamp(),
+			},
+			{ merge: true }
+		);
+
+		// post message to firestore
+		await addDoc(
+			collection(doc(db, "chats", router.query.id), "messages"),
+			{
+				timestamp: serverTimestamp(),
+				message: input,
+				user: user.email,
+				photURL: user.photoURL,
+			}
+		);
+
+		setInput("");
 	};
 
 	return (
