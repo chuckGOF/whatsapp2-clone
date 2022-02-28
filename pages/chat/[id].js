@@ -36,24 +36,34 @@ export async function getServerSideProps(context) {
 	const messageRef = doc(db, "chats", context.query.id); //doc(collection(db, "chats"), context.query.id);
 
 	// Prep the messages on the server
+	// const queryMessages = query(
+	// 	collection(messageRef, "message"),
+	// 	orderBy("timestamp", "asc")
+	// );
+
 	const queryMessages = query(
-		collection(messageRef, "message"),
+		collection(doc(db, "chats", context.query.id), "messages"),
 		orderBy("timestamp", "asc")
 	);
 
-	const messageSnapshot = await getDocs(queryMessages)
-	messageSnapshot.forEach((message) => {
-		console.log(message.data())
-	})
-	// const messages = messageSnap.docs
-	// 	.map((doc) => ({
-	// 		id: doc.id,
-	// 		...doc.data(),
-	// 	}))
-	// 	.map((messages) => ({
-	// 		...messages,
-	// 		timestamp: messages.timestamp.toDate().getTime(),
-	// 	}));
+	const messageSnapshot = await getDocs(queryMessages);
+
+	// console.log('ttt', messageSnapshot.docs)
+	// const mm = messageSnapshot.forEach((snap) => ({
+
+	// }))
+
+	// console.log('tt', mm)
+
+	const messages = messageSnapshot.docs
+		.map((doc) => ({
+			id: doc.id,
+			...doc.data(),
+		}))
+		.map((messages) => ({
+			...messages,
+			timestamp: messages.timestamp.toDate().getTime(),
+		}));
 
 	// Prep the chats
 	const chatSnap = await getDoc(messageRef);
@@ -62,13 +72,11 @@ export async function getServerSideProps(context) {
 		...chatSnap.data(),
 	};
 
-	// console.log(chat, messages);
-	console.log(chat)
+	console.log(chat, messages);
 
 	return {
 		props: {
-			messages: 'text',
-			// messages: JSON.stringify(messages),
+			messages: JSON.stringify(messages),
 			chat: chat,
 		},
 	};
