@@ -23,7 +23,7 @@ function Chat({ chat, messages }) {
 			</Head>
 			<Sidebar />
 			<div className="flex-1 overflow-scroll h-screen">
-				<ChatScreen chat={chat} message={messages} />
+				<ChatScreen chat={chat} messages={messages} />
 			</div>
 		</div>
 	);
@@ -36,24 +36,12 @@ export async function getServerSideProps(context) {
 	const messageRef = doc(db, "chats", context.query.id); //doc(collection(db, "chats"), context.query.id);
 
 	// Prep the messages on the server
-	// const queryMessages = query(
-	// 	collection(messageRef, "message"),
-	// 	orderBy("timestamp", "asc")
-	// );
-
 	const queryMessages = query(
 		collection(doc(db, "chats", context.query.id), "messages"),
 		orderBy("timestamp", "asc")
 	);
 
 	const messageSnapshot = await getDocs(queryMessages);
-
-	// console.log('ttt', messageSnapshot.docs)
-	// const mm = messageSnapshot.forEach((snap) => ({
-
-	// }))
-
-	// console.log('tt', mm)
 
 	const messages = messageSnapshot.docs
 		.map((doc) => ({

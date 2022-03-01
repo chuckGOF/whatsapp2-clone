@@ -20,6 +20,8 @@ import {
 } from "@heroicons/react/outline";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
+import { getRecipientEmail } from "../utils/utitilites";
+
 
 function ChatScreen({ chat, messages }) {
 	const [user] = useAuthState(auth);
@@ -30,6 +32,7 @@ function ChatScreen({ chat, messages }) {
 		orderBy("timestamp", "asc")
 	);
 	const [messagesSnapshot] = useCollection(messagesRef);
+	const recipientEmail = getRecipientEmail(chat.users, user)
 
 	const showMessages = () => {
 		if (messagesSnapshot) {
@@ -41,6 +44,14 @@ function ChatScreen({ chat, messages }) {
 						...message.data(),
 						timestamp: message.data().timestamp?.toDate().getTime(),
 					}}
+				/>
+			));
+		} else {
+			return JSON.parse(messages).map((message) => (
+				<Message
+					key={message.id}
+					user={message.user}
+					message={message}
 				/>
 			));
 		}
@@ -81,8 +92,8 @@ function ChatScreen({ chat, messages }) {
 
 				{/* HeaderInformation */}
 				<div className="ml-4 flex-1">
-					<h3 className="mb-1">{user.displayName}</h3>
-					<p className="text-sm text-gray-400">Last Seen ...</p>
+					<h3 className="mb-1">{recipientEmail}</h3>
+					<p className="text-sm text-gray-400">{ }</p>
 				</div>
 
 				{/* HeaderIcons */}
