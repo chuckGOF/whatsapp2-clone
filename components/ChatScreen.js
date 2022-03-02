@@ -9,6 +9,7 @@ import {
 	setDoc,
 	serverTimestamp,
 	addDoc,
+	where,
 } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { Avatar } from "@mui/material";
@@ -21,7 +22,7 @@ import {
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
 import { getRecipientEmail } from "../utils/utitilites";
-
+import TimeAgo from "react-timeago";
 
 function ChatScreen({ chat, messages }) {
 	const [user] = useAuthState(auth);
@@ -32,8 +33,13 @@ function ChatScreen({ chat, messages }) {
 		orderBy("timestamp", "asc")
 	);
 	const [messagesSnapshot] = useCollection(messagesRef);
-	const recipientEmail = getRecipientEmail(chat.users, user)
+	const recipientEmail = getRecipientEmail(chat.users, user);
 
+	const [recipientSnapshot] = useCollection(
+		query(collection(db, "users"), where("email", "==", recipientEmail))
+	);
+
+	const recipient = recipientSnapshot?.docs?.[0]?.data();
 	const showMessages = () => {
 		if (messagesSnapshot) {
 			return messagesSnapshot.docs.map((message) => (
@@ -88,12 +94,23 @@ function ChatScreen({ chat, messages }) {
 		<div>
 			{/* Header */}
 			<div className="sticky bg-white z-50 top-0 flex p-3 h-20 items-center border-b border-b-gray">
-				<Avatar src="" />
+				{recipient ? (
+					<Avatar src={recipient?.photoURL} />
+				) : (
+					<Avatar>{recipientEmail[0]}</Avatar>
+				)}
 
 				{/* HeaderInformation */}
 				<div className="ml-4 flex-1">
 					<h3 className="mb-1">{recipientEmail}</h3>
-					<p className="text-sm text-gray-400">{ }</p>
+					<p className="text-sm text-gray-400">
+						last active:{" "}
+						{recipient?.lastSeen?.toDate() ? (
+							<TimeAgo datetime={recipient?.lastSeen.toDate()} />
+						) : (
+							"Unavailable"
+						)}
+					</p>
 				</div>
 
 				{/* HeaderIcons */}
