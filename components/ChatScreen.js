@@ -141,7 +141,7 @@ function ChatScreen({ chat, messages }) {
 				{/* show message */}
 				{showMessages()}
 				{/* end of message */}
-				<div className="mb-10" ref={endOfMessagesRef}></div>
+				<div className="mb-2" ref={endOfMessagesRef}></div>
 			</div>
 
 			{/* input container */}
