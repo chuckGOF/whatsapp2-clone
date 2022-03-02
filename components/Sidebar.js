@@ -72,7 +72,7 @@ function Sidebar() {
 					// onClick={() => signOut(auth)}
 					onClick={handleAuthentication}
 					className="rounded-full h-14 w-14 cursor-pointer hover:opacity-80"
-					src="https://media-exp1.licdn.com/dms/image/C4E03AQFEBdlH7oLaVA/profile-displayphoto-shrink_400_400/0/1626149579570?e=1649894400&v=beta&t=FCwRF7mI3DbyRikhnhA49-20pkIPn7fiWpfoC8oktDc"
+					src={user?.photoURL}
 					alt=""
 				/>
 				{/* IconsContainer */}
