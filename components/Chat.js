@@ -31,7 +31,7 @@ function Chat({ id, users }) {
 			>
 				{recipient ? (
 					<Avatar
-						src={recipient?.photoURL}
+						src={recipient?.photoUrl}
 					/>
 				) : (
 					<Avatar>{recipientEmail[0]}</Avatar>

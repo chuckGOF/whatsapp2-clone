@@ -105,7 +105,7 @@ function ChatScreen({ chat, messages }) {
 			{/* Header */}
 			<div className="sticky bg-white z-50 top-0 flex p-3 h-20 items-center border-b border-b-gray">
 				{recipient ? (
-					<Avatar src={recipient?.photoURL} />
+					<Avatar src={recipient?.photoUrl} />
 				) : (
 					<Avatar>{recipientEmail[0]}</Avatar>
 				)}
