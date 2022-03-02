@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import {
@@ -28,6 +28,7 @@ function ChatScreen({ chat, messages }) {
 	const [user] = useAuthState(auth);
 	const router = useRouter();
 	const [input, setInput] = useState("");
+	const endOfMessagesRef = useRef(null);
 	const messagesRef = query(
 		collection(doc(db, "chats", router.query.id), "messages"),
 		orderBy("timestamp", "asc")
@@ -40,6 +41,7 @@ function ChatScreen({ chat, messages }) {
 	);
 
 	const recipient = recipientSnapshot?.docs?.[0]?.data();
+
 	const showMessages = () => {
 		if (messagesSnapshot) {
 			return messagesSnapshot.docs.map((message) => (
@@ -61,6 +63,13 @@ function ChatScreen({ chat, messages }) {
 				/>
 			));
 		}
+	};
+
+	const scrollToBottom = () => {
+		endOfMessagesRef.current.scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		});
 	};
 
 	const sendMessage = async (e) => {
@@ -88,6 +97,7 @@ function ChatScreen({ chat, messages }) {
 		);
 
 		setInput("");
+		scrollToBottom();
 	};
 
 	return (
@@ -127,11 +137,11 @@ function ChatScreen({ chat, messages }) {
 			</div>
 
 			{/* message container */}
-			<div className="p-8 h-screen">
+			<div className="-mt-4 p-5 min-h-screen">
 				{/* show message */}
 				{showMessages()}
 				{/* end of message */}
-				<div></div>
+				<div className="mb-10" ref={endOfMessagesRef}></div>
 			</div>
 
 			{/* input container */}

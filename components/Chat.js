@@ -5,6 +5,7 @@ import { getRecipientEmail } from "../utils/utitilites";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
+import { Avatar } from "@mui/material";
 
 function Chat({ id, users }) {
 	const [user] = useAuthState(auth);
@@ -29,17 +30,11 @@ function Chat({ id, users }) {
 				className="flex items-center m-1 space-x-3 cursor-pointer p-4 break-words hover:bg-gray-300"
 			>
 				{recipient ? (
-					<img
-						className="rounded-full h-10 w-10"
+					<Avatar
 						src={recipient?.photoURL}
-						alt=""
 					/>
 				) : (
-					<img
-						className="rounded-full h-10 w-10"
-						src={user.photoURL}
-						alt=""
-					/>
+					<Avatar>{recipientEmail[0]}</Avatar>
 				)}
 				<p>{recipientEmail}</p>
 			</div>
